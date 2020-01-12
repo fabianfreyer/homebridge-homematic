@@ -149,6 +149,7 @@ HomeMaticHomeKitBlindService.prototype.setFinalBlindLevel = function (value) {
 }
 
 HomeMaticHomeKitBlindService.prototype.datapointEvent = function (dp, value) {
+  let that = this
   this.log.debug('recieving event for %s: %s value: %s (%s)', this.adress, dp, value, typeof (value))
 
   if (this.isDataPointEvent(dp, 'INHIBIT')) {
@@ -189,7 +190,11 @@ HomeMaticHomeKitBlindService.prototype.datapointEvent = function (dp, value) {
       //
     } else { // STOPPED - stop quering and set tagetPosition
       // clearInterval(this.currentLevelInterval);
-      this.setFinalBlindLevel(this.currentLevel)
+      this.query('LEVEL', (value) => {
+        that.log.debug('Blind Stop Level is %s', value)
+        that.currentLevel = value
+        that.setFinalBlindLevel(that.currentLevel)
+      })
     }
   }
 }
